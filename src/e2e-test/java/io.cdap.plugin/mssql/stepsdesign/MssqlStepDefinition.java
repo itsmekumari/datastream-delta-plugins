@@ -53,7 +53,8 @@ public class MssqlStepDefinition implements CdfHelper {
     int targetBQRecordsCount = BigQueryClient.countBqQuery(PluginPropertyUtils.pluginProp("mssqlSourceTable"));
     BeforeActions.scenario.write("No of Records Transferred to BigQuery:" + targetBQRecordsCount);
     boolean recordsMatched = BQValidation.validateDBToBQRecordValues(MssqlTestSetUpHooks.schemaName,
-            MssqlTestSetUpHooks.tableName, MssqlTestSetUpHooks.tableName);
+            PluginPropertyUtils.pluginProp("mssqlSourceTable"),
+            PluginPropertyUtils.pluginProp("mssqlSourceTable"));
     Assert.assertTrue("Value of records transferred to the target table should be equal to the value " +
             "of the records in the source table", recordsMatched);
   }

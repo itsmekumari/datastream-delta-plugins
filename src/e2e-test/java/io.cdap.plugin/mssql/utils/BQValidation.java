@@ -18,16 +18,15 @@ package io.cdap.plugin.mssql.utils;
 import com.google.cloud.bigquery.TableResult;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.type.Decimal;
+
 import io.cdap.e2e.utils.BigQueryClient;
 import io.cdap.e2e.utils.PluginPropertyUtils;
-import io.cdap.plugin.mssql.utils.MssqlClient;
-import org.apache.spark.sql.types.Decimal;
 import org.junit.Assert;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -40,12 +39,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * BQValidation.
  */
 public class BQValidation {
+
   /**
    * Extracts entire data from source and target tables.
    *
@@ -150,10 +149,10 @@ public class BQValidation {
             break;
           case Types.DECIMAL:
           case Types.NUMERIC:
-            Decimal sourceDecimal = Decimal.fromDecimal(rsSource.getBigDecimal(currentColumnCount));
-            Decimal targetDecimal = Decimal.fromDecimal(
-              bigQueryData.get(jsonObjectIdx).get(columnName).getAsBigDecimal());
-            Assert.assertEquals("Different values found for column : %s", sourceDecimal, targetDecimal);
+            BigDecimal sourceDecVal = rsSource.getBigDecimal(currentColumnCount);
+            BigDecimal targetDecVal = bigQueryData.get(jsonObjectIdx).get(columnName).getAsBigDecimal();
+            Assert.assertEquals(String.format("Different values found for column: %s", columnName),
+                    sourceDecVal.intValue(), targetDecVal.intValue());
             break;
           case Types.REAL:
             float sourceReal = rsSource.getFloat(currentColumnCount);
@@ -176,6 +175,7 @@ public class BQValidation {
             break;
           case Types.BINARY:
           case Types.VARBINARY:
+          case Types.LONGVARBINARY:
             String sourceB64String = new String(Base64.getEncoder().encode(rsSource.getBytes(currentColumnCount)));
             String targetB64String = bigQueryData.get(jsonObjectIdx).get(columnName).getAsString();
             Assert.assertEquals("Different values found for column : %s",
@@ -196,19 +196,18 @@ public class BQValidation {
                                 String.valueOf(targetValue));
             break;
           case Types.DATE:
-            Date dateSource = rsSource.getDate(currentColumnCount);
-            Date dateTarget = Date.valueOf(bigQueryData.get(jsonObjectIdx).get(columnName).getAsString());
+            java.sql.Date dateSource = rsSource.getDate(currentColumnCount);
+            java.sql.Date dateTarget = java.sql.Date.valueOf(
+                    bigQueryData.get(jsonObjectIdx).get(columnName).getAsString());
             Assert.assertEquals("Different values found for column : %s", dateSource, dateTarget);
             break;
           case Types.TIMESTAMP:
-            Timestamp timestampSource = rsSource.getTimestamp(currentColumnCount);
-            String targetTimestampString = bigQueryData.get(jsonObjectIdx).get(columnName).getAsString();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            java.util.Date parsedDate = dateFormat.parse(targetTimestampString);
-            Timestamp timestampParsed = new Timestamp(parsedDate.getTime());
-            Assert.assertEquals("Different Values found for column : %s", timestampSource,
-                                timestampParsed);
+            Timestamp sourceTS = rsSource.getTimestamp(columnName);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date parsedDate = dateFormat.parse(bigQueryData.get(jsonObjectIdx).get(columnName).getAsString());
+            Timestamp targetTs = new Timestamp(parsedDate.getTime());
+            Assert.assertEquals("Different values found for column: %s",
+                    sourceTS, targetTs);
             break;
           default:
           case Types.VARCHAR:

@@ -33,7 +33,7 @@ public class MssqlClient {
         TimeZone timezone = TimeZone.getTimeZone("UTC");
         TimeZone.setDefault(timezone);
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        String databaseName = PluginPropertyUtils.pluginProp("databaseName");
+        String databaseName = PluginPropertyUtils.pluginProp("mssqlDatabaseName");
         return DriverManager.getConnection("jdbc:sqlserver://" + System.getenv("MSSQL_HOST")
                         + ":" + System.getenv("MSSQL_PORT") + ";databaseName=" + databaseName,
                 System.getenv("MSSQL_USERNAME"), System.getenv("MSSQL_PASSWORD"));
@@ -45,6 +45,9 @@ public class MssqlClient {
         try (Connection connect = getMssqlConnection(); Statement statement = connect.createStatement()) {
             String createTableQuery = "CREATE TABLE " + schema + "." + table + datatypeColumns;
             statement.executeUpdate(createTableQuery);
+            String enableCDCSql = "EXEC sys.sp_cdc_enable_table @source_schema = " + schema + " , " +
+             "@source_name = " + table + ", @capture_instance = NULL, @role_name = 'cdc_role';";
+            statement.execute(enableCDCSql);
 
             // Insert row1 data.
             String datatypesValues = PluginPropertyUtils.pluginProp("mssqlDatatypeValuesRow1");

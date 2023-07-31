@@ -47,13 +47,13 @@ public class MssqlTestSetUpHooks {
 
   @Before(order = 2, value = "@MSSQL_SOURCE")
   public static void createTable() throws SQLException, ClassNotFoundException {
-    MssqlClient.createTable(tableName, schemaName, datatypeColumns);
+    MssqlClient.createTable(PluginPropertyUtils.pluginProp("mssqlSourceTable"), schemaName, datatypeColumns);
     BeforeActions.scenario.write("MSSQL Source Table - " + tableName + " created successfully");
   }
 
   @After(order = 2, value = "@MSSQL_DELETE")
   public static void dropTable() throws SQLException, ClassNotFoundException {
-    MssqlClient.deleteTable(schemaName, tableName);
+    MssqlClient.deleteTable(schemaName, PluginPropertyUtils.pluginProp("mssqlSourceTable"));
     BeforeActions.scenario.write("MSSQL Source Table - " + tableName + " deleted successfully");
   }
 

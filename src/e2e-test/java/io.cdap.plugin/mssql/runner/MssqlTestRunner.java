@@ -25,7 +25,8 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
   features = {"src/e2e-test/features/mssql"},
-  glue = {"stepsdesign", "io.cdap.plugin.mssql.stepsdesign", "io.cdap.plugin.mssql.hooks"},
+  glue = {"stepsdesign", "io.cdap.plugin.common.stepsdesign", "io.cdap.plugin.mssql.stepsdesign",
+          "io.cdap.plugin.mssql.hooks"},
   tags = {"@Mssql"}, monochrome = true,
         plugin = {"pretty", "html:target/cucumber-html-report", "json:target/cucumber-reports/cucumber.json",
                 "junit:target/cucumber-reports/cucumber.xml"}

@@ -32,13 +32,13 @@ Feature: Mssql - Verify Mssql source data transfer to BigQuery
     And Click on the "Next" button in replication to navigate
     Then Replace input plugin property: "project" with value: "projectId"
     Then Enter input plugin property: "datasetName" with value: "dataset"
-    And Click on the "Next" button in replication to navigate
+    Then Click on the "Next" button in replication to navigate
     Then Select the source table if available
-    And Click on the "Next" button in replication to navigate
+    Then Click on the "Next" button in replication to navigate
     Then Wait till the Configure Advanced Properties page is loaded in replication
-    And Click on the "Next" button in replication to navigate
+    Then Click on the "Next" button in replication to navigate
     Then Wait till the Review Assessment page is loaded in replication
-    And Click on the "Next" button in replication to navigate
+    Then Click on the "Next" button in replication to navigate
     Then Deploy the replication pipeline
     And Run the replication Pipeline
     Then Open the Advanced logs
@@ -66,9 +66,9 @@ Feature: Mssql - Verify Mssql source data transfer to BigQuery
     Then Select the source table if available
     And Click on the "Next" button in replication to navigate
     Then Wait till the Configure Advanced Properties page is loaded in replication
-    And Click on the "Next" button in replication to navigate
+    Then Click on the "Next" button in replication to navigate
     Then Wait till the Review Assessment page is loaded in replication
-    And Click on the "Next" button in replication to navigate
+    Then Click on the "Next" button in replication to navigate
     Then Deploy the replication pipeline
     And Run the replication Pipeline
     Then Open the Advanced logs
